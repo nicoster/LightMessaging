@@ -6,9 +6,9 @@
 #include "sandbox.h"
 #endif
 
-#ifndef LIGHTMESSAGING_USE_ROCKETBOOTSTRAP
-#define LIGHTMESSAGING_USE_ROCKETBOOTSTRAP 1
-#endif
+// #ifndef LIGHTMESSAGING_USE_ROCKETBOOTSTRAP
+// #define LIGHTMESSAGING_USE_ROCKETBOOTSTRAP 1
+// #endif
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <ImageIO/ImageIO.h>
