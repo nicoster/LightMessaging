@@ -10,6 +10,11 @@
 // #define LIGHTMESSAGING_USE_ROCKETBOOTSTRAP 1
 // #endif
 
+#define PLACEHOLDER
+#define CHECK_MACH_ERROR_RETURN(a, ret) do {kern_return_t rr = (a); if ((rr) != KERN_SUCCESS) { NSLog(@"timespent, Mach error %x (%s) on line %d of file %s\n", (rr), mach_error_string((rr)), __LINE__, __FILE__);  return ret;} } while (0)
+#define CHECK_MACH_ERROR(a) CHECK_MACH_ERROR_RETURN(a, PLACEHOLDER)
+#define CHECK_MACH_ERROR_RET(a) CHECK_MACH_ERROR_RETURN(a, a)
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <ImageIO/ImageIO.h>
 #include <mach/mach.h>
@@ -113,23 +118,19 @@ static inline mach_msg_return_t LMMachMsg(LMConnection *connection, mach_msg_hea
 	for (;;) {
 		kern_return_t err;
 		if (connection->serverPort == MACH_PORT_NULL) {
-			mach_port_t selfTask = mach_task_self();
 			if ((kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_5_0) && (kCFCoreFoundationVersionNumber < 800.0)) {
 				int sandbox_result = sandbox_check(getpid(), "mach-lookup", SANDBOX_FILTER_LOCAL_NAME | SANDBOX_CHECK_NO_REPORT, connection->serverName);
-				if (sandbox_result) {
-					return sandbox_result;
-				}
+				CHECK_MACH_ERROR_RET(sandbox_result);
 			}
 			// Lookup remote port
 			mach_port_t bootstrap = MACH_PORT_NULL;
-			task_get_bootstrap_port(selfTask, &bootstrap);
+			task_get_bootstrap_port(mach_task_self(), &bootstrap);
 #if LIGHTMESSAGING_USE_ROCKETBOOTSTRAP
 			err = rocketbootstrap_look_up(bootstrap, connection->serverName, &connection->serverPort);
 #else
 			err = bootstrap_look_up(bootstrap, connection->serverName, &connection->serverPort);
 #endif
-			if (err)
-				return err;
+			CHECK_MACH_ERROR_RET(err);
 		}
 		msg->msgh_remote_port = connection->serverPort;
 		err = mach_msg(msg, option, send_size, rcv_size, rcv_name, timeout, notify);
