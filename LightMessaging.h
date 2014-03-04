@@ -10,9 +10,8 @@
 // #define LIGHTMESSAGING_USE_ROCKETBOOTSTRAP 1
 // #endif
 
-#define PLACEHOLDER
 #define CHECK_MACH_ERROR_RETURN(a, ret) do {kern_return_t rr = (a); if ((rr) != KERN_SUCCESS) { NSLog(@"timespent, Mach error %x (%s) on line %d of file %s\n", (rr), mach_error_string((rr)), __LINE__, __FILE__);  return ret;} } while (0)
-#define CHECK_MACH_ERROR(a) CHECK_MACH_ERROR_RETURN(a, PLACEHOLDER)
+#define CHECK_MACH_ERROR(a) CHECK_MACH_ERROR_RETURN(a,)
 #define CHECK_MACH_ERROR_RET(a) CHECK_MACH_ERROR_RETURN(a, a)
 
 #import <CoreGraphics/CoreGraphics.h>
